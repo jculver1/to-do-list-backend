@@ -18,5 +18,40 @@ app.get('/', (req, res) => {
     });
 })
 
+app.post('/', (req, res, next) => {
+  console.log(req.body)
+  knex('list').insert(req.body) 
+  .then((rows) => {
+    res.send(rows);
+  })
+  .catch((err) => {
+    next(err);
+  });
+})
+
+app.delete('/:id', (req, res, next) => {
+  knex('list').where({id: req.params.id}).del()
+  .then(data => {
+      res.status(200).send({
+      message: 'Method deleted',
+      data: data
+    })
+  })
+    .catch((err)=> {
+      next(err)
+    })
+})
+
+app.put('/:id', (req, res, next) => {
+  knex('list').update(req.body).where('id', req.params.id).returning('*')
+  .then((rows) => {
+    res.send(200);
+  })
+  .catch((err) => {
+    next(err);
+  });
+})
+
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}! Yay SQL!`))
